@@ -50,6 +50,11 @@
     
     
 </div> --}}
+<style>
+  .job-card-new {
+    height: 300px;
+  }
+</style>
 <section class="featured-jobs py-5">
   <div class="container">
 

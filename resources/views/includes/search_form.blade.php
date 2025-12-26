@@ -32,7 +32,22 @@
 		    {{-- <h3>{{__('Search Jobs')}}</h3> --}}
 			<div class="input-group mb-3">
 				<input type="text"  name="search" id="jbsearch" value="{{Request::get('search', '')}}" class="form-control" placeholder="{{__('Enter Skills or job title')}}" autocomplete="off" />
-				{!! Form::select('functional_area_id[]', ['' => __('Select Functional Area')]+$functionalAreas, Request::get('functional_area_id', null), array('class'=>'form-control', 'id'=>'functional_area_id')) !!}
+				{{-- {!! Form::select('functional_area_id[]', ['' => __('Select Functional Area')]+$functionalAreas, Request::get('functional_area_id', null), array('class'=>'form-control', 'id'=>'functional_area_id')) !!} --}}
+                {!! Form::select(
+                    'job_experience_id[]',
+                    ['' => __('Select Experience')] + $jobExperiences,
+                    Request::get('job_experience_id'),
+                    ['class' => 'form-control']
+                ) !!}
+
+
+                {!! Form::select(
+                    'job_type_id[]',
+                    ['' => __('Select Job Type')] + $jobTypes,
+                    Request::get('job_type_id'),
+                    ['class' => 'form-control']
+                ) !!}
+
 
                 <button type="submit" class="btn"><i class="fas fa-search"></i></button>
 				

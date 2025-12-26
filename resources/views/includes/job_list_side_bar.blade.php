@@ -1,4 +1,10 @@
-<div class="col-lg-3"> 
+<style>
+    .sidebar {
+        position: relative;
+        top:0px;
+        height: none;
+        border-right: none;
+    }</style><div class="col-lg-3"> 
 	<div class="jobreqbtn">
 	@if (Request::get('search') != '' || Request::get('functional_area_id') != '' || Request::get('country_id') != ''|| Request::get('state_id') != '' || Request::get('city_id') != ''|| Request::get('city_id') != '')
 	<a class="btn btn-job-alert" href="javascript:;">

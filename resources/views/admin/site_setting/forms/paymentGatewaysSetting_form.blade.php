@@ -9,11 +9,11 @@
             <div class="paymentboxstabs">
             <ul class="nav nav-tabs">              
                 <li class="active"> <a href="#packagesfor" data-toggle="tab" aria-expanded="false"><i class="fa fa-users" aria-hidden="true"></i> Packages For </a> </li>              
-                <li class=""> <a href="#paypaltab" data-toggle="tab" aria-expanded="false"><i class="fa fa-cc-paypal" aria-hidden="true"></i> PayPal </a> </li>
-                <li class=""> <a href="#stripetab" data-toggle="tab" aria-expanded="false"><i class="fa fa-cc-stripe" aria-hidden="true"></i> Stripe </a> </li>
+                {{-- <li class=""> <a href="#paypaltab" data-toggle="tab" aria-expanded="false"><i class="fa fa-cc-paypal" aria-hidden="true"></i> PayPal </a> </li> --}}
+                {{-- <li class=""> <a href="#stripetab" data-toggle="tab" aria-expanded="false"><i class="fa fa-cc-stripe" aria-hidden="true"></i> Stripe </a> </li> --}}
                 <li class=""> <a href="#razorpaytab" data-toggle="tab" aria-expanded="false"><i class="fa fa-credit-card" aria-hidden="true"></i> Razorpay </a> </li>
-                <li class=""> <a href="#paytmtab" data-toggle="tab" aria-expanded="false"><i class="fa fa-credit-card" aria-hidden="true"></i> Paytm </a> </li>
-                <li class=""> <a href="#paystacktab" data-toggle="tab" aria-expanded="false"><i class="fa fa-credit-card" aria-hidden="true"></i> Paystack </a> </li>
+                {{-- <li class=""> <a href="#paytmtab" data-toggle="tab" aria-expanded="false"><i class="fa fa-credit-card" aria-hidden="true"></i> Paytm </a> </li> --}}
+                {{-- <li class=""> <a href="#paystacktab" data-toggle="tab" aria-expanded="false"><i class="fa fa-credit-card" aria-hidden="true"></i> Paystack </a> </li> --}}
                 {{-- <li>
                 <a href="#iyzicotab" data-toggle="tab">
                     <i class="fa fa-credit-card"></i> Iyzico

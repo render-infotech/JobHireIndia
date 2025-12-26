@@ -36,16 +36,16 @@
         @include('admin/shared/side_bars/blogs')
         @include('admin/shared/side_bars/seo')
         @include('admin/shared/side_bars/faq')
-        @include('admin/shared/side_bars/video')
+        {{-- @include('admin/shared/side_bars/video') --}}
         @include('admin/shared/side_bars/testimonial')
-        @include('admin/shared/side_bars/slider')
+        {{-- @include('admin/shared/side_bars/slider') --}}
 		
 		
 		@if(APAuthHelp::check(['SUP_ADM']))
         <li class="heading">
-            <h3 class="uppercase">Translation</h3>
+            {{-- <h3 class="uppercase">Translation</h3>
         </li>		
-        @include('admin/shared/side_bars/language')
+        @include('admin/shared/side_bars/language') --}}
 
 
 
@@ -68,12 +68,12 @@
             <h3 class="uppercase">Transitions</h3>
         </li>
         <li class="nav-item  "> <a href="{{ route('list.payment.hostory') }}" class="nav-link "> <span class="title"> Companies Payment History</span> </a> </li>
-        <li class="nav-item  "> <a href="{{ route('list.users.payment.history') }}" class="nav-link "> <span class="title"> Jobseekers Payment History</span> </a> </li>
+        {{-- <li class="nav-item  "> <a href="{{ route('list.users.payment.history') }}" class="nav-link "> <span class="title"> Jobseekers Payment History</span> </a> </li> --}}
 		
         <li class="heading">
             <h3 class="uppercase">Job Attributes</h3>
         </li>
-        @include('admin/shared/side_bars/language_level')
+        {{-- @include('admin/shared/side_bars/language_level') --}}
         @include('admin/shared/side_bars/career_level')
         @include('admin/shared/side_bars/functional_area')
         @include('admin/shared/side_bars/gender') 

@@ -89,7 +89,7 @@
     <div class="row align-items-center">
 
       <!-- LEFT CONTENT -->
-      <div class="col-md-6 mb-5 hero-left-pattern">
+      <div class="col-md-8 mb-5 hero-left-pattern">
         <?php $widget = widget(5); ?>
 
         @if(Auth::guard('company')->check())
@@ -101,6 +101,7 @@
           </p>
         @else
           <h1 class="fw-bold">
+            {{-- Find the Right Job with JobHire --}}
             {{ __($widget->extra_field_1) }}
           </h1>
           <p class="text-secondary mb-4">
@@ -119,7 +120,7 @@
       </div>
 
       <!-- RIGHT SECTION -->
-      <div class="col-md-6 text-center">
+      <div class="col-md-4 text-center">
 
         @if((bool)$siteSetting->is_slider_active)
           <!-- SLIDER -->

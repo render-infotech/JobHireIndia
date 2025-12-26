@@ -16,9 +16,11 @@
 
 </div>
 </div> --}}
-@include('includes.about')
+{{-- @include('includes.about') --}}
 <!-- Featured Jobs start -->
 @include('includes.featured_jobs')
+@include('includes.job_types')
+
 <!-- Featured Jobs ends -->
 <!-- Top Employers start -->
 {{-- @include('includes.top_employers') --}}
@@ -53,7 +55,7 @@
 
 
 <!-- Testimonials start -->
-{{-- @include('includes.testimonials') --}}
+@include('includes.testimonials')
 <!-- Testimonials End -->
 
 <!-- Top countrie start -->

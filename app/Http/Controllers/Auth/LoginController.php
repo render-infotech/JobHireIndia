@@ -16,7 +16,7 @@ use App\Http\Controllers\Controller;
 
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Http;
 
 use App\Company;
 use Illuminate\Support\Facades\Auth;
@@ -239,17 +239,88 @@ class LoginController extends Controller
 
     public function sendCompanyOtp(Request $request)
     {
-        $request->validate(['mobile' => 'required|digits:10']);
+        try {
+            $request->validate([
+                'mobile' => 'required|digits:10'
+            ]);
 
-        $otp = 123456; // testing
+            // DEBUG: Check what values are being loaded
+            $debug = [
+                'username' => env('AIRTEL_IQ_USERNAME'),
+                'password' => env('AIRTEL_IQ_PASSWORD') ? 'EXISTS' : 'NULL',
+                'customerId' => env('AIRTEL_IQ_CUSTOMER_ID'),
+                'sourceAddress' => env('AIRTEL_IQ_SENDER_ID'),
+                'dltTemplateId' => env('AIRTEL_IQ_DLT_TEMPLATE_ID'),
+                'entityId' => env('AIRTEL_IQ_ENTITY_ID'),
+            ];
 
-        session([
-            'company_otp' => $otp,
-            'company_mobile' => $request->mobile,
-            'company_otp_expiry' => now()->addMinutes(5)
-        ]);
+            \Log::info('Airtel IQ Config Debug', $debug);
 
-        return response()->json(['success' => true]);
+            // Generate OTP
+            $otp = rand(100000, 999999);
+            $phone = '91' . $request->mobile;
+
+            $username = env('AIRTEL_IQ_USERNAME');
+            $password = env('AIRTEL_IQ_PASSWORD');
+            $customerId = env('AIRTEL_IQ_CUSTOMER_ID');
+            $sourceAddress = env('AIRTEL_IQ_SENDER_ID');
+            $dltTemplateId = env('AIRTEL_IQ_DLT_TEMPLATE_ID');
+            $entityId = env('AIRTEL_IQ_ENTITY_ID');
+
+            $auth = base64_encode("$username:$password");
+
+            $payload = [
+                "customerId" => $customerId,
+                "destinationAddress" => [$phone],
+                "dltTemplateId" => $dltTemplateId,
+                "entityId" => $entityId,
+                "message" => "Your OTP for candidate verification is $otp. Please use this within 5 minutes. Do not share it with anyone.",
+                "messageType" => "SERVICE_IMPLICIT",
+                "sourceAddress" => $sourceAddress,
+            ];
+
+            \Log::info('Airtel IQ Request Payload', $payload);
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Basic ' . $auth,
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json'
+            ])->post('https://iqsms.airtel.in/api/v1/send-prepaid-sms', $payload);
+
+            \Log::info('Airtel IQ Response', [
+                'status' => $response->status(),
+                'body' => $response->body()
+            ]);
+
+            if (!$response->successful()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to send OTP: ' . $response->body()
+                ], 500);
+            }
+
+            session([
+                'company_otp' => $otp,
+                'company_mobile' => $request->mobile,
+                'company_otp_expiry' => now()->addMinutes(5)
+            ]);
+
+
+            return response()->json([
+                'success' => true,
+                'message' => 'OTP sent successfully'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error sending candidate OTP', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred. Please try again.'
+            ], 500);
+        }
     }
     public function verifyCompanyOtp(Request $request)
     {
@@ -303,29 +374,112 @@ class LoginController extends Controller
         ]);
     }
 
-
     public function sendCandidateOtp(Request $request)
     {
-        $request->validate([
-            'mobile' => 'required|digits:10'
-        ]);
+        try {
+            $request->validate([
+                'mobile' => 'required|digits:10'
+            ]);
 
-        // static OTP for testing
-        $otp = 123456;
+            // DEBUG: Check what values are being loaded
+            $debug = [
+                'username' => env('AIRTEL_IQ_USERNAME'),
+                'password' => env('AIRTEL_IQ_PASSWORD') ? 'EXISTS' : 'NULL',
+                'customerId' => env('AIRTEL_IQ_CUSTOMER_ID'),
+                'sourceAddress' => env('AIRTEL_IQ_SENDER_ID'),
+                'dltTemplateId' => env('AIRTEL_IQ_DLT_TEMPLATE_ID'),
+                'entityId' => env('AIRTEL_IQ_ENTITY_ID'),
+            ];
 
-        session([
-            'candidate_otp' => $otp,
-            'candidate_mobile' => $request->mobile,
-            'candidate_otp_expiry' => now()->addMinutes(5)
-        ]);
+            \Log::info('Airtel IQ Config Debug', $debug);
 
-        \Log::info('Candidate OTP', ['otp' => $otp]);
+            // Generate OTP
+            $otp = rand(100000, 999999);
+            $phone = '91' . $request->mobile;
 
-        return response()->json([
-            'success' => true,
-            'message' => 'OTP sent'
-        ]);
+            $username = env('AIRTEL_IQ_USERNAME');
+            $password = env('AIRTEL_IQ_PASSWORD');
+            $customerId = env('AIRTEL_IQ_CUSTOMER_ID');
+            $sourceAddress = env('AIRTEL_IQ_SENDER_ID');
+            $dltTemplateId = env('AIRTEL_IQ_DLT_TEMPLATE_ID');
+            $entityId = env('AIRTEL_IQ_ENTITY_ID');
+
+            $auth = base64_encode("$username:$password");
+
+            $payload = [
+                "customerId" => $customerId,
+                "destinationAddress" => [$phone],
+                "dltTemplateId" => $dltTemplateId,
+                "entityId" => $entityId,
+                "message" => "Your OTP for candidate verification is $otp. Please use this within 5 minutes. Do not share it with anyone.",
+                "messageType" => "SERVICE_IMPLICIT",
+                "sourceAddress" => $sourceAddress,
+            ];
+
+            \Log::info('Airtel IQ Request Payload', $payload);
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Basic ' . $auth,
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json'
+            ])->post('https://iqsms.airtel.in/api/v1/send-prepaid-sms', $payload);
+
+            \Log::info('Airtel IQ Response', [
+                'status' => $response->status(),
+                'body' => $response->body()
+            ]);
+
+            if (!$response->successful()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to send OTP: ' . $response->body()
+                ], 500);
+            }
+
+            session([
+                'candidate_otp' => $otp,
+                'candidate_mobile' => $request->mobile,
+                'candidate_otp_expiry' => now()->addMinutes(5)
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'OTP sent successfully'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error sending candidate OTP', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred. Please try again.'
+            ], 500);
+        }
     }
+    // public function sendCandidateOtp(Request $request)
+    // {
+    //     $request->validate([
+    //         'mobile' => 'required|digits:10'
+    //     ]);
+
+    //     // static OTP for testing
+    //     $otp = 123456;
+
+    //     session([
+    //         'candidate_otp' => $otp,
+    //         'candidate_mobile' => $request->mobile,
+    //         'candidate_otp_expiry' => now()->addMinutes(5)
+    //     ]);
+
+    //     \Log::info('Candidate OTP', ['otp' => $otp]);
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'OTP sent'
+    //     ]);
+    // }
 
 
     public function verifyCandidateOtp(Request $request)

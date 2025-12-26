@@ -10410,17 +10410,18 @@ body {
   /* padding: 40px 20px; */
 }
 .hero-section {
-  background: linear-gradient(90deg, #f5ebc9a3 0%, #33333324 100%);
+  /* background: linear-gradient(90deg, #f5ebc9a3 0%, #33333324 100%); */
   /* background: linear-gradient(
     90deg,
     rgba(241, 237, 250, 1) 0%,
     rgba(228, 245, 229, 1) 100%
   ); */
+  background-color: rgb(244 242 246 / var(--tw-bg-opacity, 1));
   padding: 80px 0 0px;
 }
 .hero-left-pattern {
   /* Pattern image background */
-  background-image: url("../images/pattern-bg.png");
+  /* background-image: url("../images/pattern-bg.png"); */
 
   background-size: cover, 120px; /* gradient covers full, pattern tiles */
   background-repeat: no-repeat, repeat;
@@ -10724,7 +10725,7 @@ body {
     rgba(241, 237, 250, 1) 0%,
     rgba(228, 245, 229, 1) 100%
   ); */
-  background: linear-gradient(90deg, #33333324 0%, #f5ebc9a3 100%);
+  /* background: linear-gradient(90deg, #33333324 0%, #f5ebc9a3 100%); */
 }
 .job-card-simple {
   background: #ffffff;
@@ -11897,7 +11898,7 @@ a {
 
 .contact-form {
   background: #fff;
-  border: 1px solid #e2e8f0;
+  /* border: 1px solid #e2e8f0; */
   border-radius: 10px;
 }
 
@@ -12767,10 +12768,10 @@ a {
     rgba(241, 237, 250, 1) 0%,
     rgba(228, 245, 229, 1) 100%
   ); */
-  background: linear-gradient(90deg, #33333324 0%, #f5ebc9a3 100%);
+  /* background: linear-gradient(90deg, #33333324 0%, #f5ebc9a3 100%); */
 
-  padding: 25px;
-  border-radius: 12px;
+  /* padding: 25px; */
+  /* border-radius: 12px; */
   /* box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); */
   transition: transform 0.3s ease;
 }
@@ -12780,8 +12781,8 @@ a {
 }
 
 .how-img {
-  width: 200px;
-  height: 200px;
+  width: 250px;
+  height: 250px;
   object-fit: contain;
   margin-bottom: 15px;
 }
@@ -13631,7 +13632,7 @@ a {
 .header {
   background-color: #fff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  padding: 12px 24px;
+  /* padding: 12px 24px; */
   position: sticky;
   top: 0;
   z-index: 1000;

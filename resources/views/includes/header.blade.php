@@ -320,13 +320,13 @@
         <div class="choose-container">
           <!-- Job Seeker -->
           <a href="{{ route('login') }}" class="choose-card">
-            <img src="{{ asset('images/teams/job.png') }}" alt="Job Seeker" />
+            <img src="{{ asset('images/teams/jobseeker.png') }}" alt="Job Seeker" />
             {{-- <p>Job Seeker</p> --}}
           </a>
 
           <!-- Company -->
           <a href="{{ url('company-login') }}" class="choose-card">
-            <img src="{{ asset('images/teams/hire.png') }}" alt="Company" />
+            <img src="{{ asset('images/teams/employer.jpg') }}" alt="Company" />
             {{-- <p>Company</p> --}}
           </a>
         </div>

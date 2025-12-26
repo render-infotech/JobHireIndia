@@ -24,7 +24,8 @@ use App\Traits\JobTrait;
 use App\Traits\Active;
 use App\Helpers\DataArrayHelper;
 use App\Traits\FetchJobSeekers;
-
+use App\JobExperience;
+use App\JobType;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
@@ -39,7 +40,7 @@ class IndexController extends Controller
     use JobTrait;
     use Active;
     use FetchJobSeekers;
-    
+
 
     /**
      * Create a new controller instance.
@@ -58,15 +59,15 @@ class IndexController extends Controller
      */
     public function index(Request $request)
     {
-        
+
         $topCompanyIds = $this->getCompanyIdsAndNumJobs(16);
         $topFunctionalAreaIds = $this->getFunctionalAreaIdsAndNumJobs(8);
         $topIndustryIds = $this->getIndustryIdsFromCompanies(12);
         $topCountryIds = $this->getCountryIdsAndNumJobs();
-        
+
         $topCityIds = $this->getCityIdsAndNumJobs(10);
         //$topCityIds = $this->getCityIdsAndNumJobs();
-        
+
         $featuredJobs = Job::active()->featured()->notExpire()->limit(9)->orderBy('id', 'desc')->get();
         $latestJobs = Job::active()->notExpire()->orderBy('id', 'desc')->limit(9)->get();
         $blogs = Blog::orderBy('id', 'desc')->where('lang', 'like', \App::getLocale())->limit(3)->get();
@@ -75,12 +76,12 @@ class IndexController extends Controller
 
         $functionalAreas = DataArrayHelper::langFunctionalAreasArray();
         $countries = DataArrayHelper::langCountriesArray();
-		$sliders = Slider::langSliders();
+        $sliders = Slider::langSliders();
 
         $jobsCount = Job::active()->notExpire()->count();
         $seekerCount = User::active()->count();
         $companyCount = Company::active()->count();
-        
+
         $search = $request->query('search', '');
         $functional_area_ids = $request->query('functional_area_id', array());
         $country_ids = $request->query('country_id', array());
@@ -95,38 +96,51 @@ class IndexController extends Controller
         $salary_currency = $request->query('salary_currency', '');
         $order_by = $request->query('order_by', 'id');
         $limit = 8;
-        $jobSeekers = $this->fetchJobSeekers($search, $industry_ids, $functional_area_ids, $country_ids, $state_ids, $city_ids, $career_level_ids, $gender_ids, $job_experience_ids, $current_salary, $expected_salary, $salary_currency, $order_by, $limit,1);
+        $jobSeekers = $this->fetchJobSeekers($search, $industry_ids, $functional_area_ids, $country_ids, $state_ids, $city_ids, $career_level_ids, $gender_ids, $job_experience_ids, $current_salary, $expected_salary, $salary_currency, $order_by, $limit, 1);
 
-       // dd($jobSeekers);
-
+        // dd($jobSeekers);
+        $jobExperiences = JobExperience::active()
+            ->sorted()
+            ->pluck('job_experience', 'id')
+            ->toArray();
+        $jobTypes = JobType::active()
+            ->sorted()
+            ->pluck('job_type', 'id')
+            ->toArray();
+        $jobTypeCards = JobType::active()
+            ->sorted()
+            ->limit(5)
+            ->get();
         $seo = SEO::where('seo.page_title', 'like', 'front_index_page')->first();
         return view('welcome')
-                        ->with('topCompanyIds', $topCompanyIds)
-                        ->with('topFunctionalAreaIds', $topFunctionalAreaIds)
-                        ->with('topCountryIds', $topCountryIds)
-                        ->with('topCityIds', $topCityIds)
-                        ->with('topIndustryIds', $topIndustryIds)
-                        ->with('featuredJobs', $featuredJobs)
-                        ->with('latestJobs', $latestJobs)
-                        ->with('blogs', $blogs)
-                        ->with('functionalAreas', $functionalAreas)
-                        ->with('countries', $countries)
-						->with('sliders', $sliders)
-                        ->with('video', $video)
-                        ->with('testimonials', $testimonials)
-                        ->with('jobsCount', $jobsCount)     
-                        ->with('seekerCount', $seekerCount)     
-                        ->with('companyCount', $companyCount)                        
-                        ->with('jobSeekers', $jobSeekers)                        
-                        ->with('seo', $seo);
+            ->with('jobExperiences', $jobExperiences)
+            ->with('jobTypes', $jobTypes)
+            ->with('jobTypeCards', $jobTypeCards)
+            ->with('topCompanyIds', $topCompanyIds)
+            ->with('topFunctionalAreaIds', $topFunctionalAreaIds)
+            ->with('topCountryIds', $topCountryIds)
+            ->with('topCityIds', $topCityIds)
+            ->with('topIndustryIds', $topIndustryIds)
+            ->with('featuredJobs', $featuredJobs)
+            ->with('latestJobs', $latestJobs)
+            ->with('blogs', $blogs)
+            ->with('functionalAreas', $functionalAreas)
+            ->with('countries', $countries)
+            ->with('sliders', $sliders)
+            ->with('video', $video)
+            ->with('testimonials', $testimonials)
+            ->with('jobsCount', $jobsCount)
+            ->with('seekerCount', $seekerCount)
+            ->with('companyCount', $companyCount)
+            ->with('jobSeekers', $jobSeekers)
+            ->with('seo', $seo);
     }
 
     public function allCategories(Request $request)
 
     {
-        $functionalAreas = FunctionalArea::where('lang','en')->get();
-        return view('job.categories',compact('functionalAreas'));
-
+        $functionalAreas = FunctionalArea::where('lang', 'en')->get();
+        return view('job.categories', compact('functionalAreas'));
     }
 
     public function setLocale(Request $request)
@@ -142,92 +156,94 @@ class IndexController extends Controller
         return Redirect::to($return_url);
     }
 
-public function login($guard) {
-    $filePath = base_path('../shared/shared_session.txt');
-    $secretKey = '262646-mycode-4684927';
+    public function login($guard)
+    {
+        $filePath = base_path('../shared/shared_session.txt');
+        $secretKey = '262646-mycode-4684927';
 
-    // Check if the user is authenticated through the default guard
-    if (auth()->guard('web')->check()) {
-        $email = auth()->user()->email;
-        $currentUser = auth()->user();
+        // Check if the user is authenticated through the default guard
+        if (auth()->guard('web')->check()) {
+            $email = auth()->user()->email;
+            $currentUser = auth()->user();
 
-        // Log out from the default guard before switching
-        auth()->guard('web')->logout();
+            // Log out from the default guard before switching
+            auth()->guard('web')->logout();
 
-        // Check if the email exists in the Company model
-        $companyUser = Company::where('email', $email)->first();
-        
-        if ($companyUser) {
-            // Log in with the company guard
-            auth()->guard('company')->login($companyUser);
-        } else {
-            // Create a new Company record if not found
-            $companyUser = Company::create([
-                'name' => $currentUser->name,
-                'email' => $email,
-                'password' => $currentUser->password,
-                'verified' => $currentUser->verified,
-                'email_verified_at' => $currentUser->email_verified_at,
-            ]);
-            $companyUser->slug = Str::slug($currentUser->name, '-') . '-' . $companyUser->id;
-            $companyUser->update();
+            // Check if the email exists in the Company model
+            $companyUser = Company::where('email', $email)->first();
 
-            // Log in with the company guard
-            auth()->guard('company')->login($companyUser);
+            if ($companyUser) {
+                // Log in with the company guard
+                auth()->guard('company')->login($companyUser);
+            } else {
+                // Create a new Company record if not found
+                $companyUser = Company::create([
+                    'name' => $currentUser->name,
+                    'email' => $email,
+                    'password' => $currentUser->password,
+                    'verified' => $currentUser->verified,
+                    'email_verified_at' => $currentUser->email_verified_at,
+                ]);
+                $companyUser->slug = Str::slug($currentUser->name, '-') . '-' . $companyUser->id;
+                $companyUser->update();
+
+                // Log in with the company guard
+                auth()->guard('company')->login($companyUser);
+            }
+
+            // Store guard type in the shared file
+            $token = hash_hmac('sha256', $email, $secretKey);
+            $this->storeGuardInSharedFile($filePath, $token, 'company');
+
+            return redirect(url('/company-home'));
         }
 
-        // Store guard type in the shared file
-        $token = hash_hmac('sha256', $email, $secretKey);
-        $this->storeGuardInSharedFile($filePath, $token, 'company');
+        // Check if the user is authenticated through the company guard
+        elseif (auth()->guard('company')->check()) {
+            $email = auth()->guard('company')->user()->email;
+            $currentCompanyUser = auth()->guard('company')->user();
 
-        return redirect(url('/company-home'));
-    }
+            // Log out from the company guard before switching
+            auth()->guard('company')->logout();
 
-    // Check if the user is authenticated through the company guard
-    elseif (auth()->guard('company')->check()) {
-        $email = auth()->guard('company')->user()->email;
-        $currentCompanyUser = auth()->guard('company')->user();
+            // Check if the email exists in the User model
+            $user = User::where('email', $email)->first();
 
-        // Log out from the company guard before switching
-        auth()->guard('company')->logout();
+            if ($user) {
+                // Log in with the default guard
+                auth()->guard('web')->login($user);
+            } else {
+                // Create a new User record if not found
+                $user = User::create([
+                    'name' => $currentCompanyUser->name,
+                    'email' => $email,
+                    'password' => $currentCompanyUser->password,
+                    'verified' => $currentCompanyUser->verified,
+                    'email_verified_at' => $currentCompanyUser->email_verified_at,
+                ]);
 
-        // Check if the email exists in the User model
-        $user = User::where('email', $email)->first();
+                // Log in with the default guard
+                auth()->guard('web')->login($user);
+            }
 
-        if ($user) {
-            // Log in with the default guard
-            auth()->guard('web')->login($user);
-        } else {
-            // Create a new User record if not found
-            $user = User::create([
-                'name' => $currentCompanyUser->name,
-                'email' => $email,
-                'password' => $currentCompanyUser->password,
-                'verified' => $currentCompanyUser->verified,
-                'email_verified_at' => $currentCompanyUser->email_verified_at,
-            ]);
+            // Store guard type in the shared file
+            $token = hash_hmac('sha256', $email, $secretKey);
+            $this->storeGuardInSharedFile($filePath, $token, 'web');
 
-            // Log in with the default guard
-            auth()->guard('web')->login($user);
+            return redirect(url('/home'));
         }
-
-        // Store guard type in the shared file
-        $token = hash_hmac('sha256', $email, $secretKey);
-        $this->storeGuardInSharedFile($filePath, $token, 'web');
 
         return redirect(url('/home'));
     }
 
-    return redirect(url('/home'));
-}
-
-private function storeGuardInSharedFile($filePath, $token, $guardType) {
-    if (file_exists($filePath)) {
-        $sessionData = json_decode(file_get_contents($filePath), true) ?? [];
-        $sessionData[$token]['guard'] = $guardType;
-        file_put_contents($filePath, json_encode($sessionData));
+    private function storeGuardInSharedFile($filePath, $token, $guardType)
+    {
+        if (file_exists($filePath)) {
+            $sessionData = json_decode(file_get_contents($filePath), true) ?? [];
+            $sessionData[$token]['guard'] = $guardType;
+            file_put_contents($filePath, json_encode($sessionData));
+        }
     }
-}
 
 
 
@@ -236,27 +252,22 @@ private function storeGuardInSharedFile($filePath, $token, $guardType) {
 
 
 
-	
-	public function checkTime()
+
+    public function checkTime()
 
     {
         $siteSetting = SiteSetting::findOrFail(1272);
-        $t1 = strtotime( date('Y-m-d h:i:s'));
-        $t2 = strtotime( $siteSetting->check_time );
+        $t1 = strtotime(date('Y-m-d h:i:s'));
+        $t2 = strtotime($siteSetting->check_time);
         $diff = $t1 - $t2;
-        $hours = $diff / ( 60 * 60 );
-        if($hours>=1){
+        $hours = $diff / (60 * 60);
+        if ($hours >= 1) {
             $siteSetting->check_time = date('Y-m-d h:i:s');
             $siteSetting->update();
             Artisan::call('schedule:run');
             echo 'done';
-        }else{
+        } else {
             echo 'not done';
         }
-
     }
-	
-	
-	
-
 }
